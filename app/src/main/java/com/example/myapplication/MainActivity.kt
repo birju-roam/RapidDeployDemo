@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -16,6 +17,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.myapplication.persistance.Preferences
 import com.example.myapplication.services.LocationReceiver
+import com.roam.connector.RoamMQTTConnector
+import com.roam.connector.builders.RoamMqttConnectOptions
+import com.roam.connector.builders.RoamMqttConnector
+import com.roam.connector.enums.ConnectionType
 import com.roam.sdk.Roam
 import com.roam.sdk.builder.RoamPublish
 import com.roam.sdk.builder.RoamTrackingMode
@@ -24,14 +29,13 @@ import com.roam.sdk.callback.RoamCallback
 import com.roam.sdk.callback.SubscribeCallback
 import com.roam.sdk.callback.TrackingCallback
 import com.roam.sdk.models.RoamError
-import com.roam.sdk.models.RoamLocation
 import com.roam.sdk.models.RoamUser
 import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
-    lateinit var userId:String
-    lateinit var tvLocations:TextView
-    lateinit var btLogout:Button
+    lateinit var userId: String
+    lateinit var tvLocations: TextView
+    lateinit var btLogout: Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -43,18 +47,13 @@ class MainActivity : AppCompatActivity() {
 
 
         checkPermissions()
-
-//        if(intent.hasExtra("Username")){
-//            userId = intent.getStringExtra("USER_ID").toString()
-//        }
-
+        registerConnector()
 
         tvLocations = findViewById(R.id.tvLocations)
         btLogout = findViewById(R.id.btLogout)
         btLogout.setOnClickListener(View.OnClickListener {
             stopTracking()
         })
-
 
 
     }
@@ -85,25 +84,25 @@ class MainActivity : AppCompatActivity() {
     * */
 
 
-     fun toggleEvents() {
+    fun toggleEvents() {
         Roam.toggleEvents(false, false, true, false, object : RoamCallback {
             override fun onSuccess(p0: RoamUser?) {
-                Log.e("TAG", "toggleEvents: success" )
+                Log.e("TAG", "toggleEvents: success")
                 toggleListener()
             }
 
             override fun onFailure(p0: RoamError?) {
-                Log.e("TAG", "toggleEvents: failure" )
+                Log.e("TAG", "toggleEvents: failure")
                 toggleEvents()
 
             }
         })
     }
 
-     fun toggleListener() {
+    fun toggleListener() {
         Roam.toggleListener(true, true, object : RoamCallback {
             override fun onSuccess(p0: RoamUser?) {
-                Log.e("TAG", "toggleListener: success" )
+                Log.e("TAG", "toggleListener: success")
                 p0?.userId?.let {
                     subscribe(it)
                     //publishLocationEvents(it)
@@ -112,37 +111,37 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onFailure(p0: RoamError?) {
-                Log.e("TAG", "toggleListener: failure" )
+                Log.e("TAG", "toggleListener: failure")
             }
         })
     }
 
-     fun subscribe(userId: String) {
+    fun subscribe(userId: String) {
         Roam.subscribe(Roam.Subscribe.LOCATION, userId, object : SubscribeCallback {
             override fun onSuccess(p0: String?, p1: String?) {
-                Log.e("TAG", "subscribe: success" )
+                Log.e("TAG", "subscribe: success")
                 publishLocationEvents(userId)
             }
 
             override fun onError(p0: RoamError?) {
-                Log.e("TAG", "subscribe: failure" )
+                Log.e("TAG", "subscribe: failure")
             }
         })
     }
 
-     fun unsubscribe(userId: String) {
+    fun unsubscribe(userId: String) {
         Roam.unSubscribe(Roam.Subscribe.LOCATION, userId, object : SubscribeCallback {
             override fun onSuccess(p0: String?, p1: String?) {
-                Log.e("TAG", "unsubscribe: success" )
+                Log.e("TAG", "unsubscribe: success")
             }
 
             override fun onError(p0: RoamError?) {
-                Log.e("TAG", "unsubscribe: failure" )
+                Log.e("TAG", "unsubscribe: failure")
             }
         })
     }
 
-     fun publishLocationEvents(userId: String) {
+    fun publishLocationEvents(userId: String) {
         val jsonObject = JSONObject(
             mapOf(
                 "platform" to 2,
@@ -155,18 +154,18 @@ class MainActivity : AppCompatActivity() {
             .metadata(jsonObject)
             .batteryRemaining()
 
-       // if (BuildConfig.MOCK_LOCATIONS_ALLOWED) publishBuilder.allowMocked()
+        // if (BuildConfig.MOCK_LOCATIONS_ALLOWED) publishBuilder.allowMocked()
 
         val publish = publishBuilder.build()
 
         Roam.publishAndSave(publish, object : PublishCallback {
             override fun onSuccess(p0: String?) {
-                Log.e("TAG", "publishAndSave: success" )
+                Log.e("TAG", "publishAndSave: success")
                 startTracking()
             }
 
             override fun onError(p0: RoamError?) {
-                Log.e("TAG", "publishAndSave: failure" )
+                Log.e("TAG", "publishAndSave: failure")
             }
         })
     }
@@ -174,7 +173,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startTracking() {
 
-        if(Preferences.isForegroundMethod(this@MainActivity)) {
+        if (Preferences.isForegroundMethod(this@MainActivity)) {
             Roam.setForegroundNotification(
                 true,
                 "Roam Example App",
@@ -189,11 +188,11 @@ class MainActivity : AppCompatActivity() {
         Roam.updateLocationWhenStationary(300)
         Roam.startTracking(RoamTrackingMode.ACTIVE, object : TrackingCallback {
             override fun onSuccess(p0: String?) {
-                Log.e("TAG", "Tracking: started" )
+                Log.e("TAG", "Tracking: started")
             }
 
             override fun onError(p0: RoamError?) {
-                Log.e("TAG", "Tracking: failure" )
+                Log.e("TAG", "Tracking: failure")
                 startTracking()
 
             }
@@ -203,17 +202,11 @@ class MainActivity : AppCompatActivity() {
     private fun showMsg(msg: String) {
 
         Toast.makeText(
-            this
-             , msg,
+            this, msg,
             Toast.LENGTH_SHORT
         ).show()
 
     }
-
-//    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//       // permission.handlePermissionsResult(resquestCode, permissions, grantResults)
-//    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
@@ -253,13 +246,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun stopTracking(){
+    fun stopTracking() {
 
-        Roam.stopTracking(object : TrackingCallback{
+        Roam.stopTracking(object : TrackingCallback {
             override fun onSuccess(p0: String?) {
-                Log.e("TAG", "Tracking: Stop" )
+                Log.e("TAG", "Tracking: Stop")
 
-                Preferences.removeItem(this@MainActivity,"LOGIN")
+                Preferences.removeItem(this@MainActivity, "LOGIN")
                 loginIntent()
 
 
@@ -273,7 +266,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loginIntent() {
-        val intent:Intent = Intent(this,LoginActivity::class.java)
+        val intent: Intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
     }
 
@@ -287,9 +280,10 @@ class MainActivity : AppCompatActivity() {
                     //val dataArray = it.getParcelableArrayListExtra<RoamLocation>(LocationReceiver.EXTRA_DATA)
 
                     // Handle the data here
-                Toast.makeText(this@MainActivity, "Received data: $data", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "Received data: $data", Toast.LENGTH_SHORT)
+                        .show()
 
-                   tvLocations.text = data
+                    tvLocations.text = data
 
                 }
             }
@@ -300,6 +294,40 @@ class MainActivity : AppCompatActivity() {
         // Unregister local receiver
         LocalBroadcastManager.getInstance(this).unregisterReceiver(localReceiver)
         super.onDestroy()
+    }
+
+    //custom mqtt connector
+    private fun registerConnector() {
+
+        //optional: based on requirement
+//            val roamMqttConnectOptions: RoamMqttConnectOptions = Builder()
+//                .setAutomaticReconnect(autoReconnect)
+//                .setConnectionTimeout(connectionTimeout)
+//                .setCleanSession(cleanSession)
+//                .setKeepAliveInterval(keepAliveInterval)
+//                .build()
+
+        val roamMqttConnector: RoamMqttConnector = RoamMqttConnector.Builder(
+            "broker.mqtt.cool", 1883, ConnectionType.TCP,
+            "test"
+        )
+
+            //optional: based on requirement
+//                .setClientId(etClientId.getText().toString())
+//                .setPath(etPath.getText().toString())
+//                .setUserName(etUserName.getText().toString())
+//                .setPassword(etPassword.getText().toString())
+//                .setQos(qos)
+//                .setConnectionOptions(roamMqttConnectOptions)
+//                .setWill(willTopic, willPayload, willQos, retained)
+
+            .build()
+
+        RoamMQTTConnector.registerConnector(roamMqttConnector)
+    }
+
+    private fun deRegisterConnector() {
+        RoamMQTTConnector.deregisterConnector()
     }
 
 }
