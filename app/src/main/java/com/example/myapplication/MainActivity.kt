@@ -186,7 +186,12 @@ class MainActivity : AppCompatActivity() {
 
         Roam.enableAccuracyEngine()
         Roam.updateLocationWhenStationary(300)
-        Roam.startTracking(RoamTrackingMode.ACTIVE, object : TrackingCallback {
+
+        val roamTrackingMode = RoamTrackingMode.Builder(5)
+            .setDesiredAccuracy(RoamTrackingMode.DesiredAccuracy.HIGH)
+            .build()
+        Roam.startTracking(roamTrackingMode, object : TrackingCallback {
+        //Roam.startTracking(RoamTrackingMode.ACTIVE, object : TrackingCallback {
             override fun onSuccess(p0: String?) {
                 Log.e("TAG", "Tracking: started")
             }
@@ -307,17 +312,26 @@ class MainActivity : AppCompatActivity() {
 //                .setKeepAliveInterval(keepAliveInterval)
 //                .build()
 
+
+        //Broker reference: https://testclient-cloud.mqtt.cool
+//        val roamMqttConnector: RoamMqttConnector = RoamMqttConnector.Builder(
+//            "broker.mqtt.cool", 1883, ConnectionType.SSL,
+//            "test"
+//        )
+
+
+        //Broker reference: https://cloud-intl.emqx.com
         val roamMqttConnector: RoamMqttConnector = RoamMqttConnector.Builder(
-            "broker.mqtt.cool", 1883, ConnectionType.TCP,
+            "f5050bf9.ala.eu-central-1.emqxsl.com", 8883, ConnectionType.SSL,
             "test"
         )
 
             //optional: based on requirement
 //                .setClientId(etClientId.getText().toString())
 //                .setPath(etPath.getText().toString())
-//                .setUserName(etUserName.getText().toString())
-//                .setPassword(etPassword.getText().toString())
-//                .setQos(qos)
+//                .setUserName("test")
+//                .setPassword("test")
+ //               .setQos(0)
 //                .setConnectionOptions(roamMqttConnectOptions)
 //                .setWill(willTopic, willPayload, willQos, retained)
 
