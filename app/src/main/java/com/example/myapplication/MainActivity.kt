@@ -7,7 +7,6 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -256,7 +255,7 @@ class MainActivity : AppCompatActivity() {
         Roam.stopTracking(object : TrackingCallback {
             override fun onSuccess(p0: String?) {
                 Log.e("TAG", "Tracking: Stop")
-
+                deRegisterConnector();
                 Preferences.removeItem(this@MainActivity, "LOGIN")
                 loginIntent()
 
@@ -304,35 +303,42 @@ class MainActivity : AppCompatActivity() {
     //custom mqtt connector
     private fun registerConnector() {
 
+
+
         //optional: based on requirement
-//            val roamMqttConnectOptions: RoamMqttConnectOptions = Builder()
+            val roamMqttConnectOptions = RoamMqttConnectOptions. Builder()
 //                .setAutomaticReconnect(autoReconnect)
 //                .setConnectionTimeout(connectionTimeout)
 //                .setCleanSession(cleanSession)
-//                .setKeepAliveInterval(keepAliveInterval)
-//                .build()
+                .setKeepAliveInterval(60)
+                .build()
 
 
         //Broker reference: https://testclient-cloud.mqtt.cool
 //        val roamMqttConnector: RoamMqttConnector = RoamMqttConnector.Builder(
-//            "broker.mqtt.cool", 1883, ConnectionType.SSL,
+//            "broker.mqtt.cool", 1883, ConnectionType.TCP,
 //            "test"
 //        )
 
 
         //Broker reference: https://cloud-intl.emqx.com
+//        val roamMqttConnector: RoamMqttConnector = RoamMqttConnector.Builder(
+//            "f5050bf9.ala.eu-central-1.emqxsl.com", 8084, ConnectionType.SSL,
+//            "test"
+//        )
+
         val roamMqttConnector: RoamMqttConnector = RoamMqttConnector.Builder(
-            "f5050bf9.ala.eu-central-1.emqxsl.com", 8883, ConnectionType.SSL,
+            "y018d058.ala.dedicated.aws.emqxcloud.com", 8883, ConnectionType.SSL,
             "test"
         )
 
             //optional: based on requirement
-//                .setClientId(etClientId.getText().toString())
-//                .setPath(etPath.getText().toString())
-//                .setUserName("test")
-//                .setPassword("test")
- //               .setQos(0)
-//                .setConnectionOptions(roamMqttConnectOptions)
+ //               .setClientId("emqx_clouda2286d")
+//                .setPath("mqtt")
+                .setUserName("test1")
+                .setPassword("test1")
+//                .setQos(0)
+                .setConnectionOptions(roamMqttConnectOptions)
 //                .setWill(willTopic, willPayload, willQos, retained)
 
             .build()

@@ -49,10 +49,10 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     //roam core
-    implementation "com.roam.sdk:roam-android:0.1.29"
+    implementation "com.roam.sdk:roam-android:0.1.30"
 
     //roam mqtt connector
-    implementation "com.roam.sdk:roam-mqtt-android:0.1.29"
+    implementation "com.roam.sdk:roam-mqtt-android:0.1.30"
 
 //    implementation files('libs/roam.aar')
 //    implementation files('libs/roam_s.aar')

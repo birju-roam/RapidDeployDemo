@@ -31,6 +31,8 @@ class ImplicitService:Service() {
         mLocationReceiver = LocationReceiver()
         val intentFilter = IntentFilter()
         intentFilter.addAction("com.roam.android.RECEIVED")
+        intentFilter.addAction("com.roam.android.NETWORK")
+        intentFilter.addAction("com.roam.android.CUSTOM.LOG")
         //
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             registerReceiver(mLocationReceiver, intentFilter, RECEIVER_EXPORTED)
