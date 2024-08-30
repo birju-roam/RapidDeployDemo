@@ -49,19 +49,18 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     //roam core
-    implementation "com.roam.sdk:roam-android:0.1.30"
-
+ //   implementation "com.roam.sdk:roam-android:0.1.30"
     //roam mqtt connector
-    implementation "com.roam.sdk:roam-mqtt-android:0.1.30"
+   // implementation "com.roam.sdk:roam-mqtt-android:0.1.27"
 
-//    implementation files('libs/roam.aar')
-//    implementation files('libs/roam_s.aar')
+    implementation files('libs/roam-core.aar')
+    implementation files('libs/roam-mqtt.aar')
 //
-//        implementation 'com.google.android.gms:play-services-location:21.3.0'
-//        implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-//        implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-//        implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.4'
-//        implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
+        implementation 'com.google.android.gms:play-services-location:21.0.1' //doubt
+        implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+        implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+        implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.4'
+        implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
 
 
 }
